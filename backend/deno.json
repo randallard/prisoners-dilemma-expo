@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.window"],
+    "strict": true
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false,
+    "proseWrap": "preserve"
+  },
+  "tasks": {
+    "start": "deno run --allow-net --allow-env --allow-read server.ts",
+    "dev": "deno run --allow-net --allow-env --allow-read --watch server.ts",
+    "test": "deno test --allow-net --allow-env --allow-read"
+  },
+  "imports": {
+    "hono": "https://deno.land/x/hono@v3.12.11/mod.ts",
+    "hono/": "https://deno.land/x/hono@v3.12.11/",
+    "supabase": "https://esm.sh/@supabase/supabase-js@2.39.7",
+    "dotenv": "https://deno.land/std@0.208.0/dotenv/mod.ts",
+    "crypto": "https://deno.land/std@0.208.0/crypto/mod.ts",
+    "uuid": "https://deno.land/std@0.208.0/uuid/mod.ts",
+    "shared-types/": "../shared-types/"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

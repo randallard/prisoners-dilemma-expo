@@ -1,0 +1,261 @@
+# ============================================================================
+# Cross-Platform Gaming App .gitignore
+# Expo + Deno + Supabase Project
+# ============================================================================
+
+# ============================================================================
+# ENVIRONMENT & SECRETS
+# ============================================================================
+.env
+.env.local
+.env.production
+.env.test
+*.env
+supabase/.env*
+
+# API Keys and secrets
+config/secrets.json
+**/secrets.*
+**/*secret*
+**/*key*
+!**/public-key*
+
+# ============================================================================
+# NODE.JS & NPM (Mobile App - Expo)
+# ============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.npm
+.pnpm-debug.log*
+
+# Package manager lock files (keep package-lock.json, remove others)
+yarn.lock
+pnpm-lock.yaml
+
+# ============================================================================
+# EXPO & REACT NATIVE
+# ============================================================================
+.expo/
+.expo-shared/
+dist/
+web-build/
+
+# Expo local builds
+*.tar.gz
+*.ipa
+*.apk
+*.aab
+
+# Metro bundler cache
+.metro-health-check*
+.haste_cache
+
+# EAS
+.easignore
+eas.json
+
+# ============================================================================
+# DENO (Backend)
+# ============================================================================
+# Keep deno.lock for reproducible builds
+# deno.lock
+
+# Deno coverage output
+coverage/
+cov_profile/
+
+# Compiled output
+*.js.map
+dist/
+build/
+
+# ============================================================================
+# SUPABASE
+# ============================================================================
+# Keep these for development
+# supabase/config.toml
+# supabase/migrations/
+
+# Local Supabase data
+supabase/.branches/
+supabase/.temp/
+supabase/logs/
+supabase/volumes/
+
+# Supabase generated files that can be regenerated
+supabase/types/
+supabase/schema.sql
+
+# ============================================================================
+# VS CODE
+# ============================================================================
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/tasks.json
+# Keep .vscode/recommendations for team consistency
+
+# ============================================================================
+# OPERATING SYSTEM
+# ============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.nfs*
+
+# ============================================================================
+# DEVELOPMENT TOOLS
+# ============================================================================
+# TypeScript
+*.tsbuildinfo
+*.tgz
+
+# Testing
+coverage/
+*.lcov
+test-results/
+playwright-report/
+
+# Logs
+logs/
+*.log
+lerna-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# ============================================================================
+# PROJECT SPECIFIC
+# ============================================================================
+# Local development files
+scratch/
+playground/
+experiments/
+
+# Documentation builds
+docs/build/
+docs/dist/
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# IDE files
+*.swp
+*.swo
+*~
+
+# ============================================================================
+# KEEP THESE IMPORTANT FILES (explicit include overrides)
+# ============================================================================
+# These files should always be committed
+!.gitkeep
+!.gitignore
+!README.md
+!package.json
+!package-lock.json
+!deno.json
+!deno.lock
+!app.json
+!tsconfig.json
+
+# Supabase configuration (needed for team development)
+!supabase/config.toml
+!supabase/migrations/
+!supabase/migrations/*.sql
+
+# Shared types (core to the project)
+!shared-types/
+!shared-types/*.ts
+
+# Project documentation
+!docs/*.md
+!*.md
