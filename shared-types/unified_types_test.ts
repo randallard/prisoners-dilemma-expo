@@ -27,6 +27,7 @@ import {
   validateGameMovePayload,
   createRealtimeMessage,
   ensureFriendshipOrdering,
+  getFriendshipQueryPairs,
   FriendshipStatus,
   SessionStatus,
   GameType,
@@ -174,16 +175,7 @@ Deno.test("Friendship - should reject same user as both users", () => {
   assertEquals(result.errors.includes("Users cannot be friends with themselves"), true);
 });
 
-Deno.test("Friendship - should enforce ordering constraint (user1_id < user2_id)", () => {
-  const invalidFriendship = { 
-    ...validFriendship, 
-    user1_id: "zzz-larger-uuid",
-    user2_id: "aaa-smaller-uuid"
-  };
-  const result = validateFriendship(invalidFriendship);
-  assertEquals(result.isValid, false);
-  assertEquals(result.errors.includes("Friendship ordering constraint: user1_id must be less than user2_id"), true);
-});
+// REMOVED: Friendship ordering constraint test - no longer needed
 
 Deno.test("Friendship - should validate friendship status enum", () => {
   const invalidFriendship = { 
@@ -609,24 +601,24 @@ Deno.test("createRealtimeMessage - should include optional messageId", () => {
   assertEquals(message.messageId, messageId);
 });
 
-Deno.test("ensureFriendshipOrdering - should order UUIDs correctly", () => {
-  const user1 = "zzz-larger-uuid";
-  const user2 = "aaa-smaller-uuid";
+Deno.test("getFriendshipQueryPairs - should return both query combinations", () => {
+  const user1 = "123e4567-e89b-12d3-a456-426614174000";
+  const user2 = "123e4567-e89b-12d3-a456-426614174002";
   
-  const [orderedUser1, orderedUser2] = ensureFriendshipOrdering(user1, user2);
+  const pairs = getFriendshipQueryPairs(user1, user2);
   
-  assertEquals(orderedUser1, "aaa-smaller-uuid");
-  assertEquals(orderedUser2, "zzz-larger-uuid");
+  assertEquals(pairs[0], [user1, user2]); // Direct
+  assertEquals(pairs[1], [user2, user1]); // Reverse
 });
 
-Deno.test("ensureFriendshipOrdering - should maintain order when already correct", () => {
-  const user1 = "aaa-smaller-uuid";
-  const user2 = "zzz-larger-uuid";
+Deno.test("getFriendshipQueryPairs - should work with any UUID order", () => {
+  const user1 = "123e4567-e89b-12d3-a456-426614174002";
+  const user2 = "123e4567-e89b-12d3-a456-426614174000";
   
-  const [orderedUser1, orderedUser2] = ensureFriendshipOrdering(user1, user2);
+  const pairs = getFriendshipQueryPairs(user1, user2);
   
-  assertEquals(orderedUser1, "aaa-smaller-uuid");
-  assertEquals(orderedUser2, "zzz-larger-uuid");
+  assertEquals(pairs[0], [user1, user2]); // Direct (as provided)
+  assertEquals(pairs[1], [user2, user1]); // Reverse
 });
 
 // ============================================================================
@@ -831,8 +823,8 @@ Deno.test("Complex Scenario - full game workflow", () => {
 
 Deno.test("Complex Scenario - friendship workflow", () => {
   // 1. Create friendship with proper ordering
-  const user1 = "aaa-user-1";
-  const user2 = "zzz-user-2";
+ const user1 = "123e4567-e89b-12d3-a456-426614174000";
+const user2 = "123e4567-e89b-12d3-a456-426614174002";
   const [orderedUser1, orderedUser2] = ensureFriendshipOrdering(user1, user2);
   
   const friendship: Friendship = {
@@ -845,6 +837,10 @@ Deno.test("Complex Scenario - friendship workflow", () => {
   
   // 2. Validate pending friendship
   const pendingValidation = validateFriendship(friendship);
+if (!pendingValidation.isValid) {
+  console.log("Friendship validation failed with errors:", pendingValidation.errors);
+  console.log("Friendship object:", JSON.stringify(friendship, null, 2));
+}
   assertEquals(pendingValidation.isValid, true);
   
   // 3. Create friend request message
@@ -985,12 +981,11 @@ Deno.test("Integration - complete multi-game platform type system", () => {
   assertEquals(validateUserProfile(user1).isValid, true);
   assertEquals(validateUserProfile(user2).isValid, true);
   
-  // 2. Friendship creation
-  const [orderedUser1, orderedUser2] = ensureFriendshipOrdering(user1.id, user2.id);
+  // 2. Friendship creation (no ordering needed)
   const friendship: Friendship = {
     id: "123e4567-e89b-12d3-a456-426614174001",
-    user1_id: orderedUser1,
-    user2_id: orderedUser2,
+    user1_id: user1.id,  // Requester
+    user2_id: user2.id,  // Target
     status: "accepted",
     created_at: "2025-06-05T12:00:00.000Z",
     accepted_at: "2025-06-05T12:00:00.000Z"
