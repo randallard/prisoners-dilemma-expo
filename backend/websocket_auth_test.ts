@@ -40,9 +40,11 @@ Deno.test("WebSocketAuthenticator - should validate valid JWT token", async () =
   
   const result = await authenticator.validateJWT("valid_jwt_token");
   
-  assertEquals(result.success, true);
-  assertEquals(result.userId, "user_123");
-  assertEquals(result.email, "test@example.com");
+  assertEquals(result.ok, true);
+  if (result.ok) {
+    assertEquals(result.value.userId, "user_123");
+    assertEquals(result.value.email, "test@example.com");
+  }
 });
 
 Deno.test("WebSocketAuthenticator - should reject expired JWT token", async () => {
@@ -50,8 +52,10 @@ Deno.test("WebSocketAuthenticator - should reject expired JWT token", async () =
   
   const result = await authenticator.validateJWT("expired_jwt_token");
   
-  assertEquals(result.success, false);
-  assertEquals(result.error, "JWT expired");
+  assertEquals(result.ok, false);
+  if (!result.ok) {
+    assertEquals(result.error, "JWT expired");
+  }
 });
 
 Deno.test("WebSocketAuthenticator - should reject invalid JWT token", async () => {
@@ -59,8 +63,10 @@ Deno.test("WebSocketAuthenticator - should reject invalid JWT token", async () =
   
   const result = await authenticator.validateJWT("invalid_jwt_token");
   
-  assertEquals(result.success, false);
-  assertEquals(result.error, "Invalid JWT");
+  assertEquals(result.ok, false);
+  if (!result.ok) {
+    assertEquals(result.error, "Invalid JWT");
+  }
 });
 
 Deno.test("WebSocketAuthenticator - should reject empty JWT token", async () => {
@@ -68,8 +74,10 @@ Deno.test("WebSocketAuthenticator - should reject empty JWT token", async () => 
   
   const result = await authenticator.validateJWT("");
   
-  assertEquals(result.success, false);
-  assertEquals(result.error, "Missing JWT token");
+  assertEquals(result.ok, false);
+  if (!result.ok) {
+    assertEquals(result.error, "Missing JWT token");
+  }
 });
 
 Deno.test("WebSocketAuthenticator - should extract JWT from WebSocket URL", () => {
@@ -157,11 +165,13 @@ Deno.test("WebSocket Authentication Flow - should authenticate and store connect
   
   // Validate JWT
   const authResult = await authenticator.validateJWT(jwt!);
-  assertEquals(authResult.success, true);
+  assertEquals(authResult.ok, true);
   
-  // Store connection
-  connectionManager.addConnection(authResult.userId!, mockWebSocket);
-  assertEquals(connectionManager.hasConnection("user_123"), true);
+  if (authResult.ok) {
+    // Store connection
+    connectionManager.addConnection(authResult.value.userId, mockWebSocket);
+    assertEquals(connectionManager.hasConnection("user_123"), true);
+  }
 });
 
 Deno.test("WebSocket Authentication Flow - should reject invalid authentication", async () => {
@@ -174,7 +184,7 @@ Deno.test("WebSocket Authentication Flow - should reject invalid authentication"
   
   // Validate JWT
   const authResult = await authenticator.validateJWT(jwt!);
-  assertEquals(authResult.success, false);
+  assertEquals(authResult.ok, false);
   
   // Should not store connection
   assertEquals(connectionManager.hasConnection("user_123"), false);

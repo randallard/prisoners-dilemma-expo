@@ -2,12 +2,19 @@
 // Use any for now to avoid type import issues during initial setup
 type SupabaseClient = any;
 
-export interface AuthResult {
-  success: boolean;
-  userId?: string;
-  email?: string;
-  error?: string;
+// Traditional Result pattern
+export type Result<T, E = string> = 
+  | { ok: true; value: T }
+  | { ok: false; error: E };
+
+// Authentication success data
+export interface AuthData {
+  userId: string;
+  email: string;
 }
+
+// Type alias for authentication results
+export type AuthResult = Result<AuthData, string>;
 
 export class WebSocketAuthenticator {
   constructor(private supabase: SupabaseClient) {}
@@ -16,7 +23,7 @@ export class WebSocketAuthenticator {
     // Handle empty JWT token
     if (!jwt || jwt.trim() === "") {
       return {
-        success: false,
+        ok: false,
         error: "Missing JWT token"
       };
     }
@@ -28,7 +35,7 @@ export class WebSocketAuthenticator {
       // Handle authentication errors
       if (error) {
         return {
-          success: false,
+          ok: false,
           error: error.message
         };
       }
@@ -36,20 +43,22 @@ export class WebSocketAuthenticator {
       // Handle case where no user is returned
       if (!data.user) {
         return {
-          success: false,
+          ok: false,
           error: "No user found for token"
         };
       }
 
       // Return successful authentication result
       return {
-        success: true,
-        userId: data.user.id,
-        email: data.user.email
+        ok: true,
+        value: {
+          userId: data.user.id,
+          email: data.user.email
+        }
       };
     } catch (error) {
       return {
-        success: false,
+        ok: false,
         error: `JWT validation failed: ${error instanceof Error ? error.message : String(error)}`
       };
     }
